@@ -469,7 +469,7 @@
             s_w_cientifico:{ joined:'cientifico', parts:['cien','ti','fi','co'], count:4 },
             s_w_descubrio:{ joined:'descubrio', parts:['des','cu','brio'], count:3 },
             s_w_blanco:{ joined:'blanco', parts:['blan','co'], count:2 },
-            s_w_einstein:{ joined:'einstein', parts:['ein','stein'], count:2 }
+            s_w_einstein:{ joined:'einstein', parts:['eins','tein'], count:2 }
           },
           accent: {
             a_w_cientifico:'esdrujula',
@@ -945,9 +945,11 @@
     // Verbo = borde (persistente) · Sujeto/Predicado = relleno
     function paintEx3(wordId, cat){
       if(cat === 'verbo'){
-        state.ex3VerbMarks[wordId] = true;
+        if(state.ex3VerbMarks[wordId]) delete state.ex3VerbMarks[wordId];
+        else state.ex3VerbMarks[wordId] = true;
       }else{
-        state.ex3[wordId] = cat;
+        if(state.ex3[wordId] === cat) delete state.ex3[wordId];
+        else state.ex3[wordId] = cat;
       }
       updateEx3UI();
     }
@@ -1096,7 +1098,12 @@
         const got = state.cats[w.id] || '';
         const right = (KEY.ex1Cats || {})[w.id];
         const el = $(w.id);
-        const isOk = got === right;
+
+        let isOk = got === right;
+        if(currentPage === 3 && w.id === 'w_cientifico'){
+          isOk = (got === 'adjetivo' || got === 'sust_comun');
+        }
+
         setMark(el, right ? isOk : null);
         if(right && isOk) ok++;
       }
@@ -1120,7 +1127,6 @@
       // 1B Verbos (tiempo) + 1C formas no personales
       const verbIds = Object.entries(state.cats).filter(([_,v])=>v==='verbo').map(([k])=>k);
       for(const wid of verbIds){
-        // Tiempo
         const keyTime = (KEY.verbTimeInSentence || {})[wid];
         if(keyTime){
           const sel = $('t_' + wid);
@@ -1130,7 +1136,6 @@
           if(tOk) ok++;
         }
 
-        // Formas no personales: se corrigen según los slots (orden mostrado)
         const vf = (KEY.verbForms || {})[wid];
         if(vf){
           const slots = (state.verbForms[wid] && Array.isArray(state.verbForms[wid].slots))
@@ -1149,7 +1154,6 @@
             if(isOk) ok++;
           }
 
-          // Conjugación (solo aparece si el alumno marcó algún infinitivo)
           const conjEl = $('conj_' + wid);
           if(conjEl){
             total++;
@@ -1167,7 +1171,6 @@
     function compute(){
       msg('');
 
-      // Ejecutamos todas las comprobaciones (pintan en verde/rojo)
       checkEx1();
       for(const w of WORDS){
         checkSyl(w.id);
@@ -1175,7 +1178,6 @@
       }
       checkEx3();
 
-      // Puntuación sobre todos los elementos corregidos visibles
       const allMarked = document.querySelectorAll('.markGood, .markBad');
       const goodMarked = document.querySelectorAll('.markGood');
 
@@ -1193,13 +1195,9 @@
     }
 
     function showSolutions(){
-      // 1A Pintar clasificación correcta
       Object.keys(KEY.ex1Cats || {}).forEach((wid)=>paintWord(wid, KEY.ex1Cats[wid]));
-
-      // Asegura que se rendericen los apartados dinámicos de 1B y 1C
       renderDynamicDetails();
 
-      // 1B Sustantivos comunes: poner SIEMPRE la respuesta correcta
       Object.keys(KEY.commonNouns || {}).forEach((wid)=>{
         const det = KEY.commonNouns[wid];
         const g = $('g_' + wid);
@@ -1212,7 +1210,6 @@
         };
       });
 
-      // 1B Verbos (tiempo): poner SIEMPRE la respuesta correcta
       Object.keys(KEY.verbTimeInSentence || {}).forEach((wid)=>{
         const t = KEY.verbTimeInSentence[wid];
         const sel = $('t_' + wid);
@@ -1220,7 +1217,6 @@
         state.verbDetails[wid] = { tiempo: t[0].toUpperCase() + t.slice(1) };
       });
 
-      // 1C Formas no personales: poner SIEMPRE la respuesta correcta
       Object.keys(KEY.verbForms || {}).forEach((wid)=>{
         renderDynamicDetails();
         const slots = (state.verbForms[wid] && Array.isArray(state.verbForms[wid].slots))
@@ -1239,13 +1235,11 @@
         }
 
         renderDynamicDetails();
-
         const conj = $('conj_' + wid);
         if(conj) conj.value = KEY.verbForms[wid].conjugacion;
         state.verbForms[wid].conjugacionPick = KEY.verbForms[wid].conjugacion;
       });
 
-      // 2 Sílabas
       function fillSyl(wordId, info){
         const sel = $('k_' + wordId);
         if(sel) sel.value = String(info.count);
@@ -1260,7 +1254,6 @@
         fillSyl(wordId, KEY.syl[k]);
       });
 
-      // 2 Acentuación
       Object.keys(KEY.accent || {}).forEach((k)=>{
         const wordId = k.replace('a_','');
         const el = $('a_' + wordId);
@@ -1271,16 +1264,13 @@
         if(v === 'esdrujula') el.value = 'Esdrújula';
       });
 
-      // 3 Ejercicio de oración
       state.ex3 = {};
       state.ex3VerbMarks = {};
       Object.keys(KEY.ex3Words || {}).forEach((k)=>{
         const role = KEY.ex3Words[k];
-        if(role === 'verbo') state.ex3VerbMarks[k] = true;
-        else state.ex3[k] = role;
+        if(role !== 'verbo') state.ex3[k] = role;
       });
 
-      // Detectar verbo principal por la clave de ex1
       const mainVerbIds = Object.keys(KEY.ex1Cats || {}).filter(id => KEY.ex1Cats[id] === 'verbo');
       const mainVerbWords = mainVerbIds.map(id => {
         const w = WORDS.find(x => x.id === id);
@@ -1290,6 +1280,7 @@
       EX3W.forEach(tok => {
         if(mainVerbWords.includes(strip(tok.text))){
           state.ex3VerbMarks[tok.id] = true;
+          state.ex3[tok.id] = 'predicado';
         }
       });
 
@@ -1598,11 +1589,9 @@
 <script>
 (function(){
   const ACCESS_PASSWORD = "GOTAEDG2";
-
   function showDenied(){
     document.body.innerHTML = '<div style="font-family:system-ui;padding:40px;text-align:center"><h2>Acceso denegado</h2><p>Debes introducir la contraseña correcta para usar la ficha.</p></div>';
   }
-
   window.addEventListener("load", function(){
     const entered = window.prompt("Introduce la contraseña para acceder al juego:");
     if(entered !== ACCESS_PASSWORD){
