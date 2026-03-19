@@ -168,35 +168,14 @@
           1) Elige una <b>categoría</b>. 2) Toca una palabra para clasificarla. 3) Pulsa <b>Comprobar</b>.
         </div>
 
-        <div class="mini">Al clasificar un <b>sustantivo común</b> o un <b>verbo</b>, aparecerán abajo ejercicios extra para completar.</div>
+        
       </section>
 
       <!-- 1B -->
-      <section class="section" id="sec1b">
-        <div class="sectionTitle">1B- Completa según lo que has clasificado</div>
-        <div class="grid2">
-          <div class="box" id="boxNouns">
-            <div class="tag">SUSTANTIVOS COMUNES: GÉNERO Y NÚMERO</div>
-            <div class="mini" id="noNouns">(Aparecerán aquí cuando pintes algún sustantivo común)</div>
-            <div class="row" id="nounsList"></div>
-          </div>
-
-          <div class="box" id="boxVerbs">
-            <div class="tag">VERBOS: TIEMPO</div>
-            <div class="mini" id="noVerbs">(Aparecerán aquí cuando pintes algún verbo)</div>
-            <div class="row" id="verbsList"></div>
-          </div>
-        </div>
-      </section>
+      <section class="section" id="sec1b" style="display:none"></section>
 
       <!-- 1C -->
-      <section class="section" id="sec1c">
-        <div class="sectionTitle">1C- Formas no personales del verbo (infinitivo, gerundio y participio)</div>
-        <div class="box">
-          <div class="mini">Este ejercicio aparece cuando hayas pintado algún verbo.</div>
-          <div id="formsWrap" class="row"></div>
-        </div>
-      </section>
+      <section class="section" id="sec1c" style="display:none"></section>
 
       <!-- 2 -->
       <section class="section" id="sec2">
@@ -233,17 +212,7 @@
           <div class="palBtn" data-ex3="verbo"><span class="dot" style="background:#f59e0b"></span> Verbo</div>
           <div class="palBtn" data-ex3="predicado"><span class="dot" style="background:#34d399"></span> Predicado</div>
         </div>
-
-        <div class="box" style="margin-top:12px">
-          <div class="tag">TIPO DE ORACIÓN</div>
-          <select id="ex3Polarity">
-            <option value="">Selecciona...</option>
-            <option>Afirmativa</option>
-            <option>Negativa</option>
-          </select>
-        </div>
-
-        <div class="wordsBox" id="ex3Box" aria-label="Palabras del ejercicio 3" style="margin-top:10px"></div>
+<div class="wordsBox" id="ex3Box" aria-label="Palabras del ejercicio 3" style="margin-top:10px"></div>
 
         <div class="mini">Se corrige al pulsar <b>Comprobar</b>.</div>
       </section>
@@ -687,175 +656,11 @@
     }
 
     function renderDynamicDetails(){
-      // Sustantivos comunes
-      const commonIds = Object.entries(state.cats).filter(([_,v])=>v==='sust_comun').map(([k])=>k);
-      $('nounsList').innerHTML = '';
-      $('noNouns').style.display = commonIds.length ? 'none' : 'block';
-
-      for(const wid of commonIds){
-        const w = WORDS.find(x=>x.id===wid);
-        const wrap = document.createElement('div');
-        wrap.className = 'box';
-        wrap.style.borderStyle = 'dashed';
-
-        const title = document.createElement('div');
-        title.style.fontWeight = '1000';
-        title.textContent = '• ' + (w ? w.text : wid);
-        wrap.appendChild(title);
-
-        const two = document.createElement('div');
-        two.className = 'inline2';
-        two.style.marginTop = '10px';
-
-        const selG = document.createElement('select');
-        selG.id = 'g_' + wid;
-        selG.innerHTML = '<option value="">Género...</option><option>Femenino</option><option>Masculino</option>';
-
-        const selN = document.createElement('select');
-        selN.id = 'n_' + wid;
-        selN.innerHTML = '<option value="">Número...</option><option>Singular</option><option>Plural</option>';
-
-        const st = state.nounDetails[wid] || {};
-        if(st.genero) selG.value = st.genero;
-        if(st.numero) selN.value = st.numero;
-
-        selG.addEventListener('change', ()=>{ state.nounDetails[wid] = state.nounDetails[wid]||{}; state.nounDetails[wid].genero = selG.value; });
-        selN.addEventListener('change', ()=>{ state.nounDetails[wid] = state.nounDetails[wid]||{}; state.nounDetails[wid].numero = selN.value; });
-
-        two.appendChild(selG);
-        two.appendChild(selN);
-        wrap.appendChild(two);
-        $('nounsList').appendChild(wrap);
-      }
-
-      // Verbos
-      const verbIds = Object.entries(state.cats).filter(([_,v])=>v==='verbo').map(([k])=>k);
-      $('verbsList').innerHTML = '';
-      $('noVerbs').style.display = verbIds.length ? 'none' : 'block';
-
-      for(const wid of verbIds){
-        const w = WORDS.find(x=>x.id===wid);
-        const wrap = document.createElement('div');
-        wrap.className = 'box';
-        wrap.style.borderStyle = 'dashed';
-
-        const title = document.createElement('div');
-        title.style.fontWeight = '1000';
-        title.textContent = '• ' + (w ? w.text : wid);
-        wrap.appendChild(title);
-
-        const selT = document.createElement('select');
-        selT.id = 't_' + wid;
-        selT.innerHTML = '<option value="">Tiempo...</option><option>Presente</option><option>Pasado</option><option>Futuro</option>';
-
-        const st = state.verbDetails[wid] || {};
-        if(st.tiempo) selT.value = st.tiempo;
-
-        selT.addEventListener('change', ()=>{ state.verbDetails[wid] = state.verbDetails[wid]||{}; state.verbDetails[wid].tiempo = selT.value; });
-
-        wrap.appendChild(selT);
-        $('verbsList').appendChild(wrap);
-      }
-
-      renderVerbForms(verbIds);
+      return;
     }
 
     function renderVerbForms(verbIds){
-      const formsWrap = $('formsWrap');
-      formsWrap.innerHTML = '';
-      if(!verbIds.length) return;
-
-      for(const wid of verbIds){
-        const cfg = (KEY.verbForms && KEY.verbForms[wid]) ? KEY.verbForms[wid] : null;
-        const w = WORDS.find(x=>x.id===wid);
-
-        const box = document.createElement('div');
-        box.className = 'box';
-        box.style.borderStyle = 'dashed';
-
-        const title = document.createElement('div');
-        title.style.fontWeight = '1000';
-        title.textContent = 'Verbo: ' + (w ? w.text : wid);
-        box.appendChild(title);
-
-        state.verbForms[wid] = state.verbForms[wid] || {};
-
-        // Orden de las formas no personales
-        // - Por defecto: aleatorio (estable durante la sesión)
-        // - Si la ficha define KEY.formsOrder: usa ese orden fijo
-        const baseKinds = ['infinitivo','gerundio','participio'];
-
-        if(Array.isArray(KEY.formsOrder) && KEY.formsOrder.length === 3){
-          state.verbForms[wid].orderKinds = KEY.formsOrder.slice();
-        }else{
-          if(!Array.isArray(state.verbForms[wid].orderKinds) || state.verbForms[wid].orderKinds.length !== 3){
-            state.verbForms[wid].orderKinds = shuffleInPlace(baseKinds.slice());
-          }
-        }
-
-        const kinds = state.verbForms[wid].orderKinds;
-        const slots = kinds.map((kind, idx)=>({
-          id: 'f' + (idx+1) + '_' + wid,
-          kind,
-          word: (cfg && cfg[kind]) ? cfg[kind] : ''
-        }));
-        state.verbForms[wid].slots = slots;
-
-        for(const f of slots){
-          const line = document.createElement('div');
-          line.className = 'inline2';
-          line.style.alignItems = 'center';
-
-          const left = document.createElement('div');
-          left.className = 'sentence';
-          left.style.textAlign = 'left';
-          left.style.fontSize = '16px';
-          left.textContent = f.word ? f.word.toUpperCase() : '—';
-
-          const sel = document.createElement('select');
-          sel.id = f.id;
-          sel.innerHTML = '<option value="">¿Qué es?...</option><option>Infinitivo</option><option>Gerundio</option><option>Participio</option>';
-          if(state.verbForms[wid][f.id]) sel.value = state.verbForms[wid][f.id];
-
-          sel.addEventListener('change', ()=>{ state.verbForms[wid][f.id] = sel.value; renderVerbForms(verbIds); });
-
-          line.appendChild(left);
-          line.appendChild(sel);
-          box.appendChild(line);
-        }
-
-        const chosen = state.verbForms[wid] || {};
-        const infinitiveChosen = Object.keys(chosen).some(k=>strip(chosen[k])==='infinitivo');
-
-        if(infinitiveChosen){
-          const wrap2 = document.createElement('div');
-          wrap2.style.marginTop = '10px';
-
-          const label = document.createElement('div');
-          label.className = 'mini';
-          label.innerHTML = '<b>Infinitivo</b>: indica la conjugación';
-
-          const selC = document.createElement('select');
-          selC.id = 'conj_' + wid;
-          selC.innerHTML = [
-            '<option value="">Conjugación...</option>',
-            '<option value="primera">1ª (-ar)</option>',
-            '<option value="segunda">2ª (-er)</option>',
-            '<option value="tercera">3ª (-ir)</option>'
-          ].join('');
-
-          const prev = state.verbForms[wid].conjugacionPick || '';
-          if(prev) selC.value = prev;
-
-          selC.addEventListener('change', ()=>{ state.verbForms[wid].conjugacionPick = selC.value; });
-
-          wrap2.appendChild(label);
-          wrap2.appendChild(selC);
-          box.appendChild(wrap2);
-        }
-
-        formsWrap.appendChild(box);
-      }
+      return;
     }
 
     // Ejercicio 2
@@ -1081,11 +886,7 @@
         setMark(el, right ? isOk : null);
         okWords = okWords && (right ? isOk : true);
       }
-
-      const pol = $('ex3Polarity');
-      const polOk = strip(pol && pol.value) === (KEY.ex3Polarity || 'afirmativa');
-      setMark(pol, polOk);
-      return okWords && polOk;
+      return okWords;
     }
 
     function checkEx1(){
@@ -1171,11 +972,24 @@
     function compute(){
       msg('');
 
-      checkEx1();
+      for(const w of WORDS){
+        const got = state.cats[w.id] || '';
+        const right = (KEY.ex1Cats || {})[w.id];
+        const el = $(w.id);
+
+        let isOk = got === right;
+        if(currentPage === 3 && w.id === 'w_cientifico'){
+          isOk = (got === 'adjetivo' || got === 'sust_comun');
+        }
+
+        setMark(el, right ? isOk : null);
+      }
+
       for(const w of WORDS){
         checkSyl(w.id);
         checkSelectAccent(w.id);
       }
+
       checkEx3();
 
       const allMarked = document.querySelectorAll('.markGood, .markBad');
@@ -1196,49 +1010,6 @@
 
     function showSolutions(){
       Object.keys(KEY.ex1Cats || {}).forEach((wid)=>paintWord(wid, KEY.ex1Cats[wid]));
-      renderDynamicDetails();
-
-      Object.keys(KEY.commonNouns || {}).forEach((wid)=>{
-        const det = KEY.commonNouns[wid];
-        const g = $('g_' + wid);
-        const n = $('n_' + wid);
-        if(g) g.value = det.genero[0].toUpperCase() + det.genero.slice(1);
-        if(n) n.value = det.numero[0].toUpperCase() + det.numero.slice(1);
-        state.nounDetails[wid] = {
-          genero: det.genero[0].toUpperCase() + det.genero.slice(1),
-          numero: det.numero[0].toUpperCase() + det.numero.slice(1)
-        };
-      });
-
-      Object.keys(KEY.verbTimeInSentence || {}).forEach((wid)=>{
-        const t = KEY.verbTimeInSentence[wid];
-        const sel = $('t_' + wid);
-        if(sel) sel.value = t[0].toUpperCase() + t.slice(1);
-        state.verbDetails[wid] = { tiempo: t[0].toUpperCase() + t.slice(1) };
-      });
-
-      Object.keys(KEY.verbForms || {}).forEach((wid)=>{
-        renderDynamicDetails();
-        const slots = (state.verbForms[wid] && Array.isArray(state.verbForms[wid].slots))
-          ? state.verbForms[wid].slots
-          : [
-              { id:'f1_' + wid, kind:'infinitivo' },
-              { id:'f2_' + wid, kind:'gerundio' },
-              { id:'f3_' + wid, kind:'participio' },
-            ];
-
-        state.verbForms[wid] = state.verbForms[wid] || {};
-        for(const s of slots){
-          if(s.kind === 'infinitivo') state.verbForms[wid][s.id] = 'Infinitivo';
-          if(s.kind === 'gerundio') state.verbForms[wid][s.id] = 'Gerundio';
-          if(s.kind === 'participio') state.verbForms[wid][s.id] = 'Participio';
-        }
-
-        renderDynamicDetails();
-        const conj = $('conj_' + wid);
-        if(conj) conj.value = KEY.verbForms[wid].conjugacion;
-        state.verbForms[wid].conjugacionPick = KEY.verbForms[wid].conjugacion;
-      });
 
       function fillSyl(wordId, info){
         const sel = $('k_' + wordId);
@@ -1249,6 +1020,7 @@
           if(inp) inp.value = p;
         });
       }
+
       Object.keys(KEY.syl || {}).forEach((k)=>{
         const wordId = k.replace('s_','');
         fillSyl(wordId, KEY.syl[k]);
@@ -1285,9 +1057,6 @@
       });
 
       updateEx3UI();
-      const pol = $('ex3Polarity');
-      if(pol) pol.value = (KEY.ex3Polarity === 'negativa') ? 'Negativa' : 'Afirmativa';
-
       compute();
       msg('Soluciones mostradas.');
     }
@@ -1349,7 +1118,6 @@
 
       resetAll();
       renderWords();
-      renderDynamicDetails();
       renderExercise2();
       renderEx3();
 
@@ -1361,188 +1129,55 @@
     // ============================
 
     function downloadPDF(){
-      const nombre = safe($('fNombre').value);
-      const fecha  = safe($('fFecha').value);
-      const lista  = safe($('fLista').value);
-      const score  = safe($('scoreBox').textContent);
+      const nombre = safe($('fNombre').value) || 'Alumno';
+      const ficha = (PAGES[currentPage] && PAGES[currentPage].pdfTitle) ? PAGES[currentPage].pdfTitle : 'Ficha';
 
-      const ex1 = WORDS.map((w)=>{
-        const got = state.cats[w.id] || '';
-        return { palabra:w.text, marcado: CAT_LABEL[got] || '—' };
-      });
+      let contenido = '<!doctype html><html lang="es"><head><meta charset="utf-8">';
+      contenido += '<title>' + ficha + '</title>';
+      contenido += '<style>body{font-family:Arial,Helvetica,sans-serif;padding:28px;color:#111}h1{font-size:22px;margin:0 0 12px}h2{font-size:16px;margin:18px 0 8px}.item{margin:4px 0} .muted{color:#666}</style>';
+      contenido += '</head><body>';
+      contenido += '<h1>' + ficha + '</h1>';
+      contenido += '<p class="muted"><b>Nombre:</b> ' + nombre + '</p>';
 
-      const nouns = Object.keys(state.cats).filter((k)=>state.cats[k]==='sust_comun').map((wid)=>{
-        const wObj = WORDS.find(x=>x.id===wid);
-        const det = state.nounDetails[wid] || {};
-        return { palabra:(wObj?wObj.text:wid), genero:safe(det.genero)||'—', numero:safe(det.numero)||'—' };
-      });
-
-      const verbs = Object.keys(state.cats).filter((k)=>state.cats[k]==='verbo').map((wid)=>{
-        const wObj = WORDS.find(x=>x.id===wid);
-        const det = state.verbDetails[wid] || {};
-        return { palabra:(wObj?wObj.text:wid), tiempo:safe(det.tiempo)||'—' };
-      });
-
-      // Formas: respetar ids f1/f2/f3 (en pantalla pueden cambiar de orden)
-      const forms = Object.keys(state.cats).filter((k)=>state.cats[k]==='verbo').map((wid)=>{
-        const wObj = WORDS.find(x=>x.id===wid);
-        const f1 = safe($('f1_'+wid)?.value) || '—';
-        const f2 = safe($('f2_'+wid)?.value) || '—';
-        const f3 = safe($('f3_'+wid)?.value) || '—';
-        let conj = '—';
-        const conjEl = $('conj_'+wid);
-        if(conjEl && conjEl.value){
-          const v = strip(conjEl.value);
-          if(v==='primera') conj = '1ª (-ar)';
-          else if(v==='segunda') conj = '2ª (-er)';
-          else if(v==='tercera') conj = '3ª (-ir)';
-        }
-        return { palabra:(wObj?wObj.text:wid), f1,f2,f3, conj };
-      });
-
-      const syl = WORDS.map((w)=>{
-        const k = safe($('k_'+w.id)?.value);
-        const n = parseInt(k||'0',10)||0;
-        const parts=[];
-        for(let i=1;i<=n;i++) parts.push(safe($('s_'+w.id+'_'+i)?.value));
-        const acc = safe($('a_'+w.id)?.value);
-        return { palabra:w.text, nSilabas:k||'—', silabas:(parts.filter(Boolean).length?parts.filter(Boolean).join(' - '):'—'), acentuacion:acc||'—' };
-      });
-
-      const ex3 = EX3W.map((w)=>({ palabra:w.text, marcado: (state.ex3[w.id] ? String(state.ex3[w.id]).toUpperCase() : '—') + (state.ex3VerbMarks[w.id] ? ' (VERBO)' : '') }));
-      const pol = safe($('ex3Polarity').value) || '—';
-
-      function cleanName(s){
-        s = (s||'alumno').trim();
-        let out='';
-        for(let i=0;i<s.length;i++){
-          const ch=s[i];
-          const code=ch.charCodeAt(0);
-          const isAZ=(code>=65&&code<=90)||(code>=97&&code<=122);
-          const is09=(code>=48&&code<=57);
-          const ok=isAZ||is09||ch===' '||ch==='_'||ch==='-'||'áéíóúÁÉÍÓÚüÜñÑ'.includes(ch);
-          if(ok) out+=ch;
-        }
-        while(out.includes('  ')) out=out.replaceAll('  ',' ');
-        out=out.trim().replaceAll(' ','_');
-        return out || 'alumno';
+      contenido += '<h2>1. Clasificación</h2>';
+      for(const w of WORDS){
+        const cat = state.cats[w.id] || '—';
+        const label = CAT_LABEL[cat] || cat || '—';
+        contenido += '<div class="item">' + w.text + ': ' + label + '</div>';
       }
 
-      const filename = (PAGES[currentPage].pdfTitle.replace(/\s+/g,'')||'Gramatica') + '_' + cleanName(nombre) + (fecha?('_'+cleanName(fecha)):'') + '.pdf';
-
-      try{
-        const has = window.jspdf && window.jspdf.jsPDF;
-        if(!has) throw new Error('jsPDF no disponible');
-        const jsPDF = window.jspdf.jsPDF;
-
-        const doc = new jsPDF({ unit:'pt', format:'a4' });
-        const pageW = doc.internal.pageSize.getWidth();
-        const pageH = doc.internal.pageSize.getHeight();
-        const margin = 48;
-        let y = margin;
-
-        function newPageIfNeeded(extra){ if(y + (extra||0) > pageH - margin){ doc.addPage(); y = margin; } }
-        function title(t){
-          newPageIfNeeded(40);
-          doc.setFont('helvetica','bold');
-          doc.setFontSize(18);
-          doc.text(String(t), margin, y);
-          y += 22;
-          doc.setDrawColor(220);
-          doc.line(margin, y, pageW - margin, y);
-          y += 14;
+      contenido += '<h2>2. Sílabas y acentuación</h2>';
+      for(const w of WORDS){
+        const nSil = safe($('k_' + w.id)?.value) || '—';
+        const partes = [];
+        const total = parseInt(nSil || '0', 10) || 0;
+        for(let i=1;i<=total;i++){
+          const inp = $('s_' + w.id + '_' + i);
+          if(inp && safe(inp.value)) partes.push(safe(inp.value));
         }
-        function sub(t){
-          newPageIfNeeded(24);
-          doc.setFont('helvetica','bold');
-          doc.setFontSize(12);
-          doc.text(String(t), margin, y);
-          y += 16;
-        }
-        function kv(k,v){
-          newPageIfNeeded(18);
-          doc.setFont('helvetica','bold');
-          doc.setFontSize(11);
-          doc.text(String(k), margin, y);
-          doc.setFont('helvetica','normal');
-          doc.text(String(v||'—'), margin + 90, y);
-          y += 16;
-        }
-        function para(t){
-          doc.setFont('helvetica','normal');
-          doc.setFontSize(11);
-          const lines = doc.splitTextToSize(String(t), pageW - margin*2);
-          newPageIfNeeded(lines.length * 14 + 6);
-          doc.text(lines, margin, y);
-          y += lines.length * 14 + 6;
-        }
-
-        title(PAGES[currentPage].pdfTitle + ' - Respuestas del alumno');
-        kv('Nombre:', nombre || '—');
-        kv('Fecha:', fecha || '—');
-        kv('Nº lista:', lista || '—');
-        if(score) kv('Puntuación:', score);
-
-        sub('Ejercicio 1 - Clasificación');
-        ex1.forEach(r=>para(r.palabra + ' → ' + r.marcado));
-
-        sub('Ejercicio 1B - Sustantivos comunes');
-        if(!nouns.length) para('(Sin respuestas en este apartado)');
-        nouns.forEach(r=>para(r.palabra + ' → Género: ' + r.genero + ' · Número: ' + r.numero));
-
-        sub('Ejercicio 1B - Verbos (tiempo)');
-        if(!verbs.length) para('(Sin respuestas en este apartado)');
-        verbs.forEach(r=>para(r.palabra + ' → Tiempo: ' + r.tiempo));
-
-        sub('Ejercicio 1C - Formas no personales');
-        if(!forms.length) para('(Sin respuestas en este apartado)');
-        forms.forEach(r=>para(r.palabra + ' → ' + r.f1 + ' | ' + r.f2 + ' | ' + r.f3 + ' · Conjugación: ' + r.conj));
-
-        sub('Ejercicio 2 - Sílabas y acentuación');
-        syl.forEach(r=>para(r.palabra + ' → Nº sílabas: ' + r.nSilabas + ' · Sílabas: ' + r.silabas + ' · Acentuación: ' + r.acentuacion));
-
-        sub('Ejercicio 3 - Análisis de oración');
-        para('Tipo de oración: ' + pol);
-        ex3.forEach(r=>para(r.palabra + ' → ' + r.marcado));
-
-        doc.save(filename);
-        msg('PDF descargado.');
-
-      }catch(e){
-        const frame = $('printFrame');
-        const html = `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>${escapeHtml(filename)}</title>
-          <style>body{font-family:system-ui; padding:24px} h1{margin:0 0 10px} h2{margin:18px 0 6px} .muted{color:#6b7280} .row{margin:4px 0}</style>
-        </head><body>
-          <h1>${escapeHtml(PAGES[currentPage].pdfTitle)} - Respuestas</h1>
-          <div class="muted">Nombre: ${escapeHtml(nombre||'—')} · Fecha: ${escapeHtml(fecha||'—')} · Nº lista: ${escapeHtml(lista||'—')}</div>
-          <div class="row">${escapeHtml(score||'')}</div>
-          <h2>Ejercicio 1</h2>${ex1.map(r=>`<div class="row">${escapeHtml(r.palabra)} → ${escapeHtml(r.marcado)}</div>`).join('')}
-          <h2>Ejercicio 2</h2>${syl.map(r=>`<div class="row">${escapeHtml(r.palabra)} → ${escapeHtml(r.nSilabas)} · ${escapeHtml(r.silabas)} · ${escapeHtml(r.acentuacion)}</div>`).join('')}
-          <h2>Ejercicio 3</h2><div class="row">Tipo: ${escapeHtml(pol)}</div>${ex3.map(r=>`<div class="row">${escapeHtml(r.palabra)} → ${escapeHtml(r.marcado)}</div>`).join('')}
-        
-<div style="margin-top:40px; padding:20px; text-align:center; border-top:2px solid #eee;">
-  <p style="font-weight:600; margin-bottom:10px;">¿Te ha gustado este recurso?</p>
-  <a href="https://www.youtube.com/@gotaeducativa" target="_blank" style="display:inline-block; margin:10px; padding:10px 20px; background:#FF0000; color:white; border-radius:8px; text-decoration:none; font-weight:600;">
-    ▶️ YouTube
-  </a>
-  <a href="https://www.instagram.com/gotaeducativa" target="_blank" style="display:inline-block; margin:10px; padding:10px 20px; background:#E1306C; color:white; border-radius:8px; text-decoration:none; font-weight:600;">
-    📸 Instagram
-  </a>
-</div>
-
-</body></html>`;
-
-        frame.srcdoc = html;
-        frame.onload = () => {
-          try{
-            frame.contentWindow.focus();
-            frame.contentWindow.print();
-            msg('No se pudo cargar jsPDF. Se abrió la impresión como alternativa.');
-          }catch(err){
-            alert('No se pudo generar PDF en este navegador.');
-          }
-        };
+        const ac = safe($('a_' + w.id)?.value) || '—';
+        contenido += '<div class="item">' + w.text + ': ' + nSil + ' sílabas · ' + (partes.length ? partes.join('-') : '—') + ' · ' + ac + '</div>';
       }
+
+      contenido += '<h2>3. Análisis de la oración</h2>';
+      for(const w of EX3W){
+        const role = state.ex3[w.id] ? String(state.ex3[w.id]).toUpperCase() : '—';
+        const verb = state.ex3VerbMarks[w.id] ? ' + VERBO' : '';
+        contenido += '<div class="item">' + w.text + ': ' + role + verb + '</div>';
+      }
+
+      contenido += '</body></html>';
+
+      const win = window.open('', '_blank');
+      if(!win){
+        alert('El navegador ha bloqueado la ventana emergente para imprimir el PDF.');
+        return;
+      }
+      win.document.open();
+      win.document.write(contenido);
+      win.document.close();
+      win.focus();
+      setTimeout(() => { win.print(); }, 250);
     }
 
     // ============================
@@ -1574,7 +1209,7 @@
 
     $('btnCheck').addEventListener('click', compute);
     $('btnShow').addEventListener('click', showSolutions);
-    $('btnReset').addEventListener('click', ()=>{ resetAll(); renderWords(); renderDynamicDetails(); renderExercise2(); renderEx3(); window.scrollTo({top:0, behavior:'smooth'}); });
+    $('btnReset').addEventListener('click', ()=>{ resetAll(); renderWords(); renderExercise2(); renderEx3(); window.scrollTo({top:0, behavior:'smooth'}); });
     $('btnPdf').addEventListener('click', downloadPDF);
 
     $('pageSelector').addEventListener('change', function(){
@@ -1614,13 +1249,15 @@
 </script>
 
 
-<div style="margin-top:40px; padding:20px; text-align:center; border-top:2px solid #eee;">
-  <p style="font-weight:600; margin-bottom:10px;">¿Te ha gustado este recurso?</p>
-  <a href="https://www.youtube.com/@gotaeducativa" target="_blank" style="display:inline-block; margin:10px; padding:10px 20px; background:#FF0000; color:white; border-radius:8px; text-decoration:none; font-weight:600;">
-    ▶️ YouTube
+<div style="margin-top:40px; padding:24px; text-align:center; border-top:2px solid #eee;">
+  <p style="font-weight:700; margin-bottom:12px;">¿Te ha gustado este recurso?</p>
+  <a href="https://www.youtube.com/@gotaeducativa" target="_blank"
+     style="display:inline-block; margin:8px; padding:12px 22px; background:#FF0000; color:#fff; border-radius:10px; text-decoration:none; font-weight:700;">
+    ▶️ YouTube @GotaEducativa
   </a>
-  <a href="https://www.instagram.com/gotaeducativa" target="_blank" style="display:inline-block; margin:10px; padding:10px 20px; background:#E1306C; color:white; border-radius:8px; text-decoration:none; font-weight:600;">
-    📸 Instagram
+  <a href="https://www.instagram.com/gotaeducativa" target="_blank"
+     style="display:inline-block; margin:8px; padding:12px 22px; background:#E1306C; color:#fff; border-radius:10px; text-decoration:none; font-weight:700;">
+    📸 Instagram @GotaEducativa
   </a>
 </div>
 
